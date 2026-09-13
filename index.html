@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AfroNLP Atlas — Mapping African Language Technology</title>
+<meta name="description" content="A centralized map of datasets, models, benchmarks and papers for African language NLP." />
+
+<!-- Fonts: Fraunces (display) + Space Grotesk (UI/technical) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          indigo: {
+            950: '#131c33',
+            900: '#16213e',
+            800: '#1e2c4f',
+            700: '#2a3a63',
+          },
+          gold: {
+            400: '#d9b24c',
+            500: '#c99a2e',
+            600: '#a97e21',
+          },
+          clay: {
+            500: '#b5502d',
+            600: '#98411f',
+          },
+          paper: '#faf7f0',
+          ink: '#1b1b1b',
+        },
+        fontFamily: {
+          display: ['"Fraunces"', 'serif'],
+          mono: ['"Space Grotesk"', 'monospace'],
+        },
+      },
+    },
+  }
+</script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-paper text-ink font-mono antialiased">
+
+  <!-- ============ NAV ============ -->
+  <header class="border-b border-ink/10 sticky top-0 z-40 bg-paper/90 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2.5 group">
+        <span class="w-8 h-8 rounded-sm bg-indigo-900 flex items-center justify-center">
+          <svg viewBox="0 0 24 24" class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4 19V7l8-4 8 4v12" stroke-linejoin="round"/>
+            <path d="M4 12l8-4 8 4" stroke-linejoin="round"/>
+            <path d="M12 8v11"/>
+          </svg>
+        </span>
+        <span class="font-display font-semibold text-lg tracking-tight">AfroNLP Atlas</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-7 text-[13px] text-ink/70">
+        <a href="#directory" class="hover:text-ink transition-colors">Directory</a>
+        <a href="#languages" class="hover:text-ink transition-colors">Languages</a>
+        <a href="#contribute" class="hover:text-ink transition-colors">Contribute</a>
+        <a href="https://github.com" target="_blank" rel="noopener" class="hover:text-ink transition-colors">GitHub</a>
+      </nav>
+      <a href="#contribute" class="text-[13px] font-medium px-3.5 py-1.5 border border-ink/20 rounded-sm hover:border-ink/60 transition-colors">
+        Submit an asset
+      </a>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="top" class="relative overflow-hidden border-b border-ink/10 bg-indigo-900 text-paper">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-24 grid md:grid-cols-[1.2fr_1fr] gap-12 items-center">
+      <div>
+        <p class="text-gold-400 text-[13px] tracking-wide mb-4">Centralized African NLP Resource &amp; Asset Mapping</p>
+        <h1 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] font-semibold text-paper">
+          One map for a hundred languages, scattered everywhere.
+        </h1>
+        <p class="mt-6 text-paper/70 text-[15px] leading-relaxed max-w-md">
+          Datasets, models, benchmarks and papers for Yoruba, Swahili, Hausa, Igbo, Amharic and beyond —
+          indexed in one place instead of forty GitHub repos and a dozen Google Drives.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#directory" class="bg-gold-500 text-indigo-950 text-[14px] font-semibold px-5 py-2.5 rounded-sm hover:bg-gold-400 transition-colors">
+            Browse the directory
+          </a>
+          <a href="#contribute" class="border border-paper/30 text-paper text-[14px] font-medium px-5 py-2.5 rounded-sm hover:border-paper/70 transition-colors">
+            Add a resource
+          </a>
+        </div>
+      </div>
+
+      <!-- language mosaic -->
+      <div class="grid grid-cols-3 gap-2 text-[13px]" aria-hidden="true">
+        <div class="col-span-2 row-span-1 bg-indigo-800 border border-paper/10 rounded-sm p-4 flex flex-col justify-between h-24">
+          <span class="text-paper/50">Yorùbá</span>
+          <span class="text-gold-400 font-semibold">14 assets</span>
+        </div>
+        <div class="bg-clay-500/90 border border-paper/10 rounded-sm p-4 flex flex-col justify-between h-24">
+          <span class="text-paper/80">Kiswahili</span>
+          <span class="text-paper font-semibold">21</span>
+        </div>
+        <div class="bg-gold-500/90 border border-paper/10 rounded-sm p-4 flex flex-col justify-between h-24 text-indigo-950">
+          <span class="text-indigo-950/70">Hausa</span>
+          <span class="font-semibold">17</span>
+        </div>
+        <div class="col-span-2 bg-indigo-800 border border-paper/10 rounded-sm p-4 flex flex-col justify-between h-24">
+          <span class="text-paper/50">Igbo</span>
+          <span class="text-gold-400 font-semibold">9 assets</span>
+        </div>
+        <div class="col-span-3 bg-indigo-700 border border-paper/10 rounded-sm p-4 flex items-center justify-between h-16">
+          <span class="text-paper/50">አማርኛ · Amharic</span>
+          <span class="text-gold-400 font-semibold">11 assets</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STAT STRIP ============ -->
+  <section class="border-b border-ink/10 bg-paper">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-6 grid grid-cols-2 sm:grid-cols-4 gap-6">
+      <div>
+        <p class="font-display text-2xl font-semibold" id="stat-count">6</p>
+        <p class="text-[12px] text-ink/50 mt-0.5">Indexed assets</p>
+      </div>
+      <div>
+        <p class="font-display text-2xl font-semibold">18+</p>
+        <p class="text-[12px] text-ink/50 mt-0.5">Languages covered</p>
+      </div>
+      <div>
+        <p class="font-display text-2xl font-semibold">6</p>
+        <p class="text-[12px] text-ink/50 mt-0.5">Task categories</p>
+      </div>
+      <div>
+        <p class="font-display text-2xl font-semibold">100%</p>
+        <p class="text-[12px] text-ink/50 mt-0.5">Community-sourced</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIRECTORY ============ -->
+  <section id="directory" class="max-w-6xl mx-auto px-5 sm:px-8 py-14">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold">Asset directory</h2>
+        <p class="text-ink/60 text-[14px] mt-1">Search by name, or filter by language and task.</p>
+      </div>
+    </div>
+
+    <!-- Search + filters -->
+    <div class="border border-ink/15 rounded-sm p-4 sm:p-5 mb-8 bg-white/40">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Search by name or keyword — e.g. “Yoruba”, “speech”, “Masakhane”"
+          class="w-full pl-9 pr-3 py-2.5 text-[14px] bg-transparent border border-ink/15 rounded-sm focus:outline-none focus:border-indigo-900 placeholder:text-ink/35"
+        />
+      </div>
+
+      <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div class="flex items-center gap-2">
+          <label for="language-filter" class="text-[12px] text-ink/50 whitespace-nowrap">Language</label>
+          <select id="language-filter" class="text-[13px] border border-ink/15 rounded-sm px-2.5 py-1.5 bg-white focus:outline-none focus:border-indigo-900">
+            <option value="All">All languages</option>
+          </select>
+        </div>
+
+        <div class="flex items-start gap-2 flex-1">
+          <span class="text-[12px] text-ink/50 mt-1.5 whitespace-nowrap">Task</span>
+          <div id="task-filters" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <button id="reset-filters" class="text-[12px] text-ink/50 underline decoration-ink/20 hover:text-ink whitespace-nowrap self-start sm:self-auto">
+          Reset filters
+        </button>
+      </div>
+    </div>
+
+    <p id="results-count" class="text-[12px] text-ink/45 mb-4"></p>
+
+    <div id="asset-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+    <div id="empty-state" class="hidden text-center py-16 border border-dashed border-ink/15 rounded-sm">
+      <p class="font-display text-lg font-medium">Nothing matches yet</p>
+      <p class="text-ink/50 text-[13px] mt-1.5">Try a different search term, or reset your filters.</p>
+    </div>
+  </section>
+
+  <!-- ============ CONTRIBUTE ============ -->
+  <section id="contribute" class="border-t border-ink/10 bg-indigo-900 text-paper">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 grid lg:grid-cols-[1fr_1.1fr] gap-12">
+      <div>
+        <p class="text-gold-400 text-[13px] tracking-wide mb-3">Community contribution</p>
+        <h2 class="font-display text-2xl sm:text-3xl font-semibold leading-tight">
+          Know a dataset or model that isn't listed?
+        </h2>
+        <p class="mt-4 text-paper/65 text-[14px] leading-relaxed max-w-sm">
+          The Atlas is only as complete as the community that feeds it. Adding an asset takes about
+          five minutes and helps the next researcher skip a week of searching.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="https://github.com/your-org/afronlp-atlas/issues/new?template=new-asset.yml" target="_blank" rel="noopener"
+             class="bg-gold-500 text-indigo-950 text-[14px] font-semibold px-5 py-2.5 rounded-sm hover:bg-gold-400 transition-colors">
+            Open a GitHub issue
+          </a>
+          <a href="https://forms.gle/your-form-id" target="_blank" rel="noopener"
+             class="border border-paper/30 text-paper text-[14px] font-medium px-5 py-2.5 rounded-sm hover:border-paper/70 transition-colors">
+            Use the submission form
+          </a>
+        </div>
+      </div>
+
+      <ol class="space-y-5">
+        <li class="flex gap-4 border-b border-paper/10 pb-5">
+          <span class="font-display text-gold-400 text-lg w-6 shrink-0">1</span>
+          <div>
+            <p class="font-medium text-[14px]">Check it isn't already listed</p>
+            <p class="text-paper/55 text-[13px] mt-1">Search the directory above by name or language to avoid duplicates.</p>
+          </div>
+        </li>
+        <li class="flex gap-4 border-b border-paper/10 pb-5">
+          <span class="font-display text-gold-400 text-lg w-6 shrink-0">2</span>
+          <div>
+            <p class="font-medium text-[14px]">Gather the essentials</p>
+            <p class="text-paper/55 text-[13px] mt-1">Asset name, language(s), task type, format, license, and a direct link to the source (GitHub, Hugging Face, or paper).</p>
+          </div>
+        </li>
+        <li class="flex gap-4 border-b border-paper/10 pb-5">
+          <span class="font-display text-gold-400 text-lg w-6 shrink-0">3</span>
+          <div>
+            <p class="font-medium text-[14px]">File it through GitHub or the form</p>
+            <p class="text-paper/55 text-[13px] mt-1">The GitHub issue template pre-fills the fields below; the form works if you'd rather not use GitHub.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="font-display text-gold-400 text-lg w-6 shrink-0">4</span>
+          <div>
+            <p class="font-medium text-[14px]">A maintainer reviews and merges</p>
+            <p class="text-paper/55 text-[13px] mt-1">Entries are checked for a working link and accurate metadata, then added to the directory.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <!-- issue template preview -->
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 pb-16">
+      <div class="border border-paper/15 rounded-sm p-5 bg-indigo-950/50 text-[13px] leading-relaxed">
+        <p class="text-paper/40 mb-3">.github/ISSUE_TEMPLATE/new-asset.yml — fields required</p>
+        <div class="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-paper/70">
+          <p><span class="text-gold-400">name:</span> Asset title</p>
+          <p><span class="text-gold-400">language:</span> One or more African languages</p>
+          <p><span class="text-gold-400">task:</span> Dataset / Model / Benchmark / TTS / STT / MT</p>
+          <p><span class="text-gold-400">source_url:</span> GitHub, Hugging Face, or paper link</p>
+          <p><span class="text-gold-400">format:</span> e.g. CoNLL, JSON, WAV, safetensors</p>
+          <p><span class="text-gold-400">license:</span> e.g. CC-BY-4.0, MIT, unspecified</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="border-t border-ink/10">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-ink/45">
+      <p>AfroNLP Atlas — an open, community-maintained index. Not affiliated with any single organization.</p>
+      <p>Built for the African NLP research community.</p>
+    </div>
+  </footer>
+
+  <!-- Card template (cloned by app.js) -->
+  <template id="card-template">
+    <article class="asset-card group border border-ink/12 rounded-sm bg-white/60 hover:bg-white transition-colors flex flex-col">
+      <div class="task-bar h-1 w-full rounded-t-sm"></div>
+      <div class="p-4.5 p-[18px] flex flex-col flex-1">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <h3 class="asset-name font-display text-[16px] font-semibold leading-snug"></h3>
+          <span class="task-badge text-[10.5px] font-semibold px-2 py-1 rounded-sm whitespace-nowrap"></span>
+        </div>
+        <p class="asset-desc text-[13px] text-ink/60 leading-relaxed mb-4"></p>
+        <div class="lang-tags flex flex-wrap gap-1.5 mb-4"></div>
+        <div class="mt-auto pt-3 border-t border-ink/10 flex items-center justify-between text-[12px]">
+          <div class="text-ink/45">
+            <span class="asset-source"></span> · <span class="asset-format"></span>
+          </div>
+          <a class="asset-link font-medium text-indigo-900 hover:text-gold-600 inline-flex items-center gap-1" target="_blank" rel="noopener">
+            View
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
