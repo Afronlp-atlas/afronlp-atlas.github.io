@@ -27,26 +27,29 @@
       <label for="search">Search</label>
       <input type="search" id="search" placeholder="Language, country, task…">
     </div>
+    <div class="section-label">Primary labels</div>
     <div class="field">
       <label>Status</label>
       <div class="chips" id="statusChips"></div>
     </div>
     <div class="field">
-      <label for="taskSel">Task</label>
-      <select id="taskSel"><option value="">All tasks</option></select>
+      <label>Task</label>
+      <div class="chips" id="taskChips"></div>
     </div>
     <div class="field">
-      <label for="countrySel">Country</label>
-      <select id="countrySel"><option value="">All countries</option></select>
+      <label>Country</label>
+      <div class="chips" id="countryChips"></div>
     </div>
     <div class="field">
-      <label for="endSel">Endangerment</label>
-      <select id="endSel">
-        <option value="">All</option>
-        <option value="stable">Stable</option>
-        <option value="vulnerable">Vulnerable</option>
-      </select>
+      <label>Endangerment</label>
+      <div class="chips" id="endChips"></div>
     </div>
+
+    <div class="section-label">Community labels</div>
+    <div class="field">
+      <div class="tagcloud" id="communityChips"></div>
+    </div>
+
     <button class="reset" id="resetBtn">Reset filters</button>
   </aside>
 

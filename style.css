@@ -31,11 +31,17 @@ aside{ padding:24px 20px; border-right:1px solid var(--line); }
 .field{ margin-bottom:22px; }
 .field label{ display:block; font-size:12px; letter-spacing:.02em; color:var(--ink-soft); margin-bottom:8px; }
 input[type="search"], select{ width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--panel); color:var(--ink); font-family:inherit; font-size:13.5px; }
-.chips{ display:flex; flex-direction:column; gap:6px; }
-.chip{ display:flex; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:13px; background:var(--panel); user-select:none; }
-.chip .dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.chip.off{ opacity:.4; }
-.chip .count{ margin-left:auto; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.section-label{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); font-weight:600; margin:24px 0 14px; }
+.section-label:first-of-type{ margin-top:0; }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; font-size:12px; background:var(--panel); color:var(--ink-soft); user-select:none; white-space:nowrap; }
+.chip .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.chip.on{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.chip .count{ color:inherit; opacity:.6; font-variant-numeric:tabular-nums; }
+.tagcloud{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:5px 10px; border:1px solid var(--line); border-radius:999px; font-size:12px; cursor:pointer; background:var(--panel); color:var(--ink-soft); user-select:none; }
+.tag.on{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.tag.empty{ color:var(--ink-soft); font-size:12.5px; cursor:default; border-style:dashed; }
 .reset{ width:100%; padding:8px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); border-radius:8px; font-family:inherit; font-size:12.5px; cursor:pointer; }
 main{ padding:24px clamp(16px,3vw,32px) 60px; min-width:0; }
 .mapwrap{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-bottom:22px; position:relative; }

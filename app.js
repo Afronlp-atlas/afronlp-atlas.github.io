@@ -5,10 +5,16 @@ const STATUS_META = {
   covered:{label:'Covered', color:'var(--covered)'},
 };
 
-let LANGUAGES=[], COUNTRIES=[], TASKS=[], RESOURCES=[], MATRIX=[];
+let LANGUAGES=[], COUNTRIES=[], TASKS=[], RESOURCES=[], MATRIX=[], COMMUNITY_TAGS=[];
 
+// Every primary/community category works the same way: an empty set means
+// "no restriction from this label", a non-empty set means "row must match
+// one of these selected values" (OR within a category, AND across categories).
 const state = {
-  search:'', statuses:new Set(Object.keys(STATUS_META)), task:'', country:'', end:'', mapVisible:true,
+  search:'',
+  status:new Set(), task:new Set(), country:new Set(), endangerment:new Set(),
+  community:new Set(),
+  mapVisible:true,
 };
 
 // Reads the labels.primary structure from data.json
@@ -32,10 +38,14 @@ function buildMatrix(){
 function filteredRows(){
   const q = state.search.trim().toLowerCase();
   return MATRIX.filter(r=>{
-    if(!state.statuses.has(r.status)) return false;
-    if(state.task && r.task!==state.task) return false;
-    if(state.country && r.lang.country!==state.country) return false;
-    if(state.end && r.lang.endangerment!==state.end) return false;
+    if(state.status.size && !state.status.has(r.status)) return false;
+    if(state.task.size && !state.task.has(r.task)) return false;
+    if(state.country.size && !state.country.has(r.lang.country)) return false;
+    if(state.endangerment.size && !state.endangerment.has(r.lang.endangerment)) return false;
+    if(state.community.size){
+      const tags = r.resources.flatMap(res=>res.labels.community||[]);
+      if(!tags.some(t=>state.community.has(t))) return false;
+    }
     if(q){
       const hay = (r.lang.name+' '+r.lang.country+' '+r.task+' '+r.resources.map(x=>x.name).join(' ')).toLowerCase();
       if(!hay.includes(q)) return false;
@@ -44,40 +54,69 @@ function filteredRows(){
   });
 }
 
-const chipsEl = document.getElementById('statusChips');
-function renderChips(){
-  const counts = {};
-  for(const k in STATUS_META) counts[k]=0;
-  for(const r of MATRIX) counts[r.status]++;
-  chipsEl.innerHTML='';
-  for(const [key,meta] of Object.entries(STATUS_META)){
-    const on = state.statuses.has(key);
-    const el = document.createElement('div');
-    el.className = 'chip'+(on?'':' off');
-    el.innerHTML = `<span class="dot" style="background:${meta.color}"></span>${meta.label}<span class="count">${counts[key]}</span>`;
-    el.onclick = ()=>{
-      if(state.statuses.has(key)) state.statuses.delete(key); else state.statuses.add(key);
+// ---- generic chip group renderer (used for status / task / country / endangerment) ----
+function renderChipGroup(containerId, values, selectedSet, opts={}){
+  const el = document.getElementById(containerId);
+  el.innerHTML='';
+  for(const val of values){
+    const on = selectedSet.has(val);
+    const chip = document.createElement('div');
+    chip.className = 'chip'+(on?' on':'');
+    const dot = opts.color ? `<span class="dot" style="background:${opts.color(val)}"></span>` : '';
+    const label = opts.label ? opts.label(val) : val;
+    const count = opts.count ? `<span class="count">${opts.count(val)}</span>` : '';
+    chip.innerHTML = `${dot}${label}${count}`;
+    chip.onclick = ()=>{
+      if(selectedSet.has(val)) selectedSet.delete(val); else selectedSet.add(val);
       renderAll();
     };
-    chipsEl.appendChild(el);
+    el.appendChild(chip);
   }
 }
 
-const taskSel = document.getElementById('taskSel');
-const countrySel = document.getElementById('countrySel');
-
-function populateSelects(){
-  TASKS.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; taskSel.appendChild(o); });
-  COUNTRIES.forEach(c=>{ const o=document.createElement('option'); o.value=c.name; o.textContent=c.name; countrySel.appendChild(o); });
+function renderCommunityCloud(){
+  const el = document.getElementById('communityChips');
+  el.innerHTML='';
+  if(COMMUNITY_TAGS.length===0){
+    el.innerHTML = `<div class="tag empty">No community labels yet</div>`;
+    return;
+  }
+  for(const tag of COMMUNITY_TAGS){
+    const on = state.community.has(tag);
+    const chip = document.createElement('div');
+    chip.className = 'tag'+(on?' on':'');
+    chip.textContent = tag;
+    chip.onclick = ()=>{
+      if(state.community.has(tag)) state.community.delete(tag); else state.community.add(tag);
+      renderAll();
+    };
+    el.appendChild(chip);
+  }
 }
+
+function renderSidebar(){
+  const counts = {};
+  for(const k in STATUS_META) counts[k]=0;
+  for(const r of MATRIX) counts[r.status]++;
+
+  renderChipGroup('statusChips', Object.keys(STATUS_META), state.status, {
+    color:key=>STATUS_META[key].color, label:key=>STATUS_META[key].label, count:key=>counts[key],
+  });
+  renderChipGroup('taskChips', TASKS, state.task, {});
+  renderChipGroup('countryChips', COUNTRIES.map(c=>c.name), state.country, {});
+  renderChipGroup('endChips', ['stable','vulnerable'], state.endangerment, {
+    label:v=>v==='stable'?'Stable':'Vulnerable',
+  });
+  renderCommunityCloud();
+}
+
 function wireControls(){
-  taskSel.onchange = ()=>{ state.task=taskSel.value; renderAll(); };
-  countrySel.onchange = ()=>{ state.country=countrySel.value; renderAll(); };
-  document.getElementById('endSel').onchange = (e)=>{ state.end=e.target.value; renderAll(); };
   document.getElementById('search').oninput = (e)=>{ state.search=e.target.value; renderAll(); };
   document.getElementById('resetBtn').onclick = ()=>{
-    state.search=''; state.statuses=new Set(Object.keys(STATUS_META)); state.task=''; state.country=''; state.end='';
-    document.getElementById('search').value=''; taskSel.value=''; countrySel.value=''; document.getElementById('endSel').value='';
+    state.search='';
+    state.status=new Set(); state.task=new Set(); state.country=new Set();
+    state.endangerment=new Set(); state.community=new Set();
+    document.getElementById('search').value='';
     renderAll();
   };
   document.getElementById('btnMap').onclick = ()=>{ state.mapVisible=true; syncToggle(); renderAll(); };
@@ -112,13 +151,12 @@ function renderMap(){
     const langCount = LANGUAGES.filter(l=>l.country===c.name).length;
     const r = 10 + langCount*2;
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','marker'+(state.country===c.name?' selected':''));
+    g.setAttribute('class','marker'+(state.country.has(c.name)?' selected':''));
     g.innerHTML = `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"></circle>
       <text x="${x}" y="${y+r+13}" text-anchor="middle">${c.name}</text>
       <text x="${x}" y="${y+4}" text-anchor="middle" fill="#fff" font-size="10">${countryRows.length}</text>`;
     g.onclick = ()=>{
-      state.country = state.country===c.name ? '' : c.name;
-      countrySel.value = state.country;
+      if(state.country.has(c.name)) state.country.delete(c.name); else state.country.add(c.name);
       renderAll();
     };
     svg.appendChild(g);
@@ -157,19 +195,19 @@ function renderResults(){
 }
 
 function renderAll(){
-  renderChips();
+  renderSidebar();
   if(state.mapVisible) renderMap();
   renderResults();
 }
 
 async function init(){
   try{
-    const res = await fetch('./data.json');
+    const res = await fetch('./data/database.json');
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     LANGUAGES = data.languages; COUNTRIES = data.countries; TASKS = data.tasks; RESOURCES = data.resources;
     MATRIX = buildMatrix();
-    populateSelects();
+    COMMUNITY_TAGS = [...new Set(RESOURCES.flatMap(r=>r.labels.community||[]))].sort();
     wireControls();
     syncToggle();
     renderAll();
