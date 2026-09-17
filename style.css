@@ -1,72 +1,102 @@
-/* AfroNLP Atlas — supplementary styles beyond Tailwind utilities */
-
-html {
-  scroll-behavior: smooth;
+:root{
+  --bg:#FAF6EE; --panel:#FFFFFF; --ink:#1E2432; --ink-soft:#5B6472;
+  --line:#E4DCC8; --accent:#B4772A; --accent-soft:#F1E3CC;
+  --untouched:#9AA3AF; --dataset:#D99A34; --benchmark:#3E79A8; --covered:#4C9A63;
+  --shadow: 0 1px 2px rgba(30,36,50,.06), 0 6px 18px rgba(30,36,50,.06);
+  --radius: 10px;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#171A22; --panel:#1F232E; --ink:#EDEFF4; --ink-soft:#A7ADBA;
+    --line:#323847; --accent:#E3A05A; --accent-soft:#3A2E1C;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
   }
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
+}
+:root[data-theme="dark"]{
+  --bg:#171A22; --panel:#1F232E; --ink:#EDEFF4; --ink-soft:#A7ADBA;
+  --line:#323847; --accent:#E3A05A; --accent-soft:#3A2E1C;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+body{ margin:0; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans', system-ui, sans-serif; min-height:100vh; }
+h1,h2,h3{ font-family:'Spectral', Georgia, serif; font-weight:600; margin:0; }
+header{ padding:28px clamp(16px,4vw,48px) 18px; border-bottom:1px solid var(--line); display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+header h1{ font-size:clamp(22px,3vw,30px); }
+header p{ margin:4px 0 0; color:var(--ink-soft); font-size:14px; max-width:52ch; }
+.toggle{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; flex-shrink:0; }
+.toggle button{ border:none; background:var(--panel); color:var(--ink-soft); padding:9px 18px; font-family:inherit; font-size:13.5px; cursor:pointer; transition:.15s; }
+.toggle button.active{ background:var(--accent); color:#fff; }
+.layout{ display:grid; grid-template-columns:250px 1fr; gap:0; max-width:1240px; margin:0 auto; }
+aside{ padding:24px 20px; border-right:1px solid var(--line); }
+.field{ margin-bottom:22px; }
+.field label{ display:block; font-size:12px; letter-spacing:.02em; color:var(--ink-soft); margin-bottom:8px; }
+input[type="search"], select{ width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:var(--panel); color:var(--ink); font-family:inherit; font-size:13.5px; }
+.section-label{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); font-weight:600; margin:24px 0 14px; }
+.section-label:first-of-type{ margin-top:0; }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; font-size:12px; background:var(--panel); color:var(--ink-soft); user-select:none; white-space:nowrap; }
+.chip .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.chip.on{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.chip .count{ color:inherit; opacity:.6; font-variant-numeric:tabular-nums; }
+.tagcloud{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ padding:5px 10px; border:1px solid var(--line); border-radius:999px; font-size:12px; cursor:pointer; background:var(--panel); color:var(--ink-soft); user-select:none; }
+.tag.on{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.tag.empty{ color:var(--ink-soft); font-size:12.5px; cursor:default; border-style:dashed; }
+.reset{ width:100%; padding:8px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); border-radius:8px; font-family:inherit; font-size:12.5px; cursor:pointer; }
+main{ padding:24px clamp(16px,3vw,32px) 60px; min-width:0; }
+.mapwrap{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-bottom:22px; position:relative; }
+.mapwrap .note{ font-size:11.5px; color:var(--ink-soft); margin:8px 2px 0; }
+
+/* New Leaflet Styles */
+#map { 
+  width: 100%; 
+  height: 400px; 
+  border-radius: 8px; 
+  z-index: 1; 
+  background: var(--bg); 
+}
+.leaflet-container { font-family: inherit; }
+/* Override default Leaflet tooltip to match our UI */
+.leaflet-tooltip {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-weight: 500;
+}
+/* Removes the default Leaflet bubble styling for our permanent map labels */
+.permanent-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
+  /* Adds a subtle white glow so text is readable regardless of the map color underneath */
+  text-shadow: 0 1px 2px var(--panel), 0 -1px 2px var(--panel), 1px 0 2px var(--panel), -1px 0 2px var(--panel);
 }
 
-body {
-  font-feature-settings: "ss01";
-}
-
-/* Visible keyboard focus everywhere, not just inputs */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid #c99a2e;
-  outline-offset: 2px;
-}
-
-/* Task-type accent colors, applied by app.js via data-task attribute on the card */
-.asset-card[data-task="Dataset"] .task-bar { background-color: #c99a2e; }
-.asset-card[data-task="Pre-trained Model"] .task-bar { background-color: #16213e; }
-.asset-card[data-task="Benchmark"] .task-bar { background-color: #b5502d; }
-.asset-card[data-task="Text-to-Speech"] .task-bar { background-color: #2f6b4f; }
-.asset-card[data-task="Speech-to-Text"] .task-bar { background-color: #5c4a9c; }
-.asset-card[data-task="Machine Translation"] .task-bar { background-color: #1e7a8c; }
-
-.asset-card[data-task="Dataset"] .task-badge { background-color: #c99a2e1a; color: #a97e21; }
-.asset-card[data-task="Pre-trained Model"] .task-badge { background-color: #16213e14; color: #16213e; }
-.asset-card[data-task="Benchmark"] .task-badge { background-color: #b5502d1a; color: #98411f; }
-.asset-card[data-task="Text-to-Speech"] .task-badge { background-color: #2f6b4f1a; color: #2f6b4f; }
-.asset-card[data-task="Speech-to-Text"] .task-badge { background-color: #5c4a9c1a; color: #5c4a9c; }
-.asset-card[data-task="Machine Translation"] .task-badge { background-color: #1e7a8c1a; color: #1e7a8c; }
-
-/* Language tag chips inside cards */
-.lang-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 2px;
-  background-color: rgba(27, 27, 27, 0.06);
-  color: rgba(27, 27, 27, 0.6);
-}
-
-/* Task filter toggle buttons */
-.task-filter-btn {
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 2px;
-  border: 1px solid rgba(27, 27, 27, 0.15);
-  color: rgba(27, 27, 27, 0.6);
-  transition: all 0.15s ease;
-}
-
-.task-filter-btn:hover {
-  border-color: rgba(27, 27, 27, 0.4);
-}
-
-.task-filter-btn.active {
-  background-color: #16213e;
-  border-color: #16213e;
-  color: #faf7f0;
+.results-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; gap:12px; flex-wrap:wrap;}
+.results-head h2{ font-size:17px; }
+.results-head span{ color:var(--ink-soft); font-size:13px; }
+table{ width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+th,td{ text-align:left; padding:10px 12px; font-size:13.5px; border-bottom:1px solid var(--line); }
+th{ font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); font-weight:500; background:var(--accent-soft); }
+tr:last-child td{ border-bottom:none; }
+.badge{ display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:12px; }
+.badge .dot{ width:8px; height:8px; border-radius:50%; }
+.badge.status{ background:var(--accent-soft); }
+a.rlink{ color:var(--accent); text-decoration:none; font-size:13px; }
+a.rlink:hover{ text-decoration:underline; }
+.empty, .loading{ padding:30px; text-align:center; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); }
+@media (max-width:760px){
+  .layout{ grid-template-columns:1fr; }
+  aside{ border-right:none; border-bottom:1px solid var(--line); }
+  table, thead, tbody, th, td, tr{ display:block; }
+  thead{ display:none; }
+  tr{ border-bottom:1px solid var(--line); padding:10px 12px; }
+  td{ border:none; padding:3px 0; display:flex; justify-content:space-between; gap:10px; }
+  td::before{ content:attr(data-label); color:var(--ink-soft); font-size:11.5px; }
 }

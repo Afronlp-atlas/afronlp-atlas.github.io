@@ -1,0 +1,137 @@
+{
+  "languages": [
+    {"id": "yor", "name": "Yoruba", "country": "Nigeria", "endangerment": "stable"},
+    {"id": "hau", "name": "Hausa", "country": "Nigeria", "endangerment": "stable"},
+    {"id": "ibo", "name": "Igbo", "country": "Nigeria", "endangerment": "vulnerable"},
+    {"id": "ful", "name": "Fulfulde", "country": "Nigeria", "endangerment": "vulnerable"},
+    {"id": "swa", "name": "Swahili", "country": "Kenya", "endangerment": "stable"},
+    {"id": "kik", "name": "Kikuyu", "country": "Kenya", "endangerment": "vulnerable"},
+    {"id": "luo", "name": "Luo", "country": "Kenya", "endangerment": "vulnerable"},
+    {"id": "amh", "name": "Amharic", "country": "Ethiopia", "endangerment": "stable"},
+    {"id": "tir", "name": "Tigrinya", "country": "Ethiopia", "endangerment": "vulnerable"},
+    {"id": "wol", "name": "Wolof", "country": "Senegal", "endangerment": "stable"},
+    {"id": "twi", "name": "Twi", "country": "Ghana", "endangerment": "stable"},
+    {"id": "zul", "name": "Zulu", "country": "South Africa", "endangerment": "stable"},
+    {"id": "xho", "name": "Xhosa", "country": "South Africa", "endangerment": "vulnerable"}
+  ],
+  "countries": [
+    {"name": "Nigeria", "lat": 9.6, "lon": 8.0},
+    {"name": "Kenya", "lat": 0.0, "lon": 38.0},
+    {"name": "Ethiopia", "lat": 9.0, "lon": 38.7},
+    {"name": "Senegal", "lat": 14.7, "lon": -14.5},
+    {"name": "Ghana", "lat": 7.9, "lon": -1.0},
+    {"name": "South Africa", "lat": -29.0, "lon": 24.0}
+  ],
+  "tasks": ["NER", "POS", "Sentiment", "Machine Translation", "Speech-to-Text", "Text-to-Speech"],
+  "resources": [
+    {
+      "id": "masakhaner2",
+      "name": "MasakhaNER 2.0",
+      "labels": {
+        "primary": {
+          "status": "covered",
+          "task": "NER",
+          "language": ["yor", "hau", "ibo", "swa", "amh", "wol", "twi", "zul"]
+        },
+        "community": ["conll-format", "shared-task-2022"]
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/masakhane/masakhaner2",
+        "github": "https://github.com/masakhane-io/masakhane-ner"
+      }
+    },
+    {
+      "id": "afrisenti",
+      "name": "AfriSenti",
+      "labels": {
+        "primary": {
+          "status": "covered",
+          "task": "Sentiment",
+          "language": ["yor", "hau", "swa", "amh", "twi"]
+        },
+        "community": ["semeval-2023"]
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/shmuhammad/AfriSenti",
+        "github": "https://github.com/afrisenti-semeval/afrisent-semeval-2023"
+      }
+    },
+    {
+      "id": "masakhapos",
+      "name": "MasakhaPOS",
+      "labels": {
+        "primary": {
+          "status": "covered",
+          "task": "POS",
+          "language": ["yor", "hau", "ibo", "swa", "twi"]
+        },
+        "community": []
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/masakhane/masakhapos",
+        "github": "https://github.com/masakhane-io/masakhane-pos"
+      }
+    },
+    {
+      "id": "mafand",
+      "name": "MAFAND-MT",
+      "labels": {
+        "primary": {
+          "status": "covered",
+          "task": "Machine Translation",
+          "language": ["yor", "hau", "swa", "amh", "wol", "zul", "xho"]
+        },
+        "community": ["news-domain"]
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/masakhane/mafand",
+        "github": "https://github.com/masakhane-io/lafand-mt"
+      }
+    },
+    {
+      "id": "cv-yor",
+      "name": "Common Voice (Yoruba)",
+      "labels": {
+        "primary": {
+          "status": "dataset_only",
+          "task": "Speech-to-Text",
+          "language": ["yor"]
+        },
+        "community": ["crowdsourced"]
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/mozilla-foundation/common_voice_16_0"
+      }
+    },
+    {
+      "id": "cv-swa",
+      "name": "Common Voice (Swahili)",
+      "labels": {
+        "primary": {
+          "status": "covered",
+          "task": "Speech-to-Text",
+          "language": ["swa"]
+        },
+        "community": ["crowdsourced"]
+      },
+      "refer_to": {
+        "huggingface": "https://huggingface.co/datasets/mozilla-foundation/common_voice_16_0"
+      }
+    },
+    {
+      "id": "yor-tts",
+      "name": "Yoruba TTS Corpus",
+      "labels": {
+        "primary": {
+          "status": "dataset_only",
+          "task": "Text-to-Speech",
+          "language": ["yor"]
+        },
+        "community": ["openslr"]
+      },
+      "refer_to": {
+        "other": "https://openslr.org/86/"
+      }
+    }
+  ]
+}
