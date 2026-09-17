@@ -6,10 +6,9 @@ const STATUS_META = {
 };
 
 let LANGUAGES=[], COUNTRIES=[], TASKS=[], RESOURCES=[], MATRIX=[], COMMUNITY_TAGS=[];
+let leafletMap, geoJsonLayer;
+let geomapData = null;
 
-// Every primary/community category works the same way: an empty set means
-// "no restriction from this label", a non-empty set means "row must match
-// one of these selected values" (OR within a category, AND across categories).
 const state = {
   search:'',
   status:new Set(), task:new Set(), country:new Set(), endangerment:new Set(),
@@ -17,7 +16,6 @@ const state = {
   mapVisible:true,
 };
 
-// Reads the labels.primary structure from data.json
 function buildMatrix(){
   const rows = [];
   for(const lang of LANGUAGES){
@@ -54,7 +52,6 @@ function filteredRows(){
   });
 }
 
-// ---- generic chip group renderer (used for status / task / country / endangerment) ----
 function renderChipGroup(containerId, values, selectedSet, opts={}){
   const el = document.getElementById(containerId);
   el.innerHTML='';
@@ -122,45 +119,77 @@ function wireControls(){
   document.getElementById('btnMap').onclick = ()=>{ state.mapVisible=true; syncToggle(); renderAll(); };
   document.getElementById('btnList').onclick = ()=>{ state.mapVisible=false; syncToggle(); renderAll(); };
 }
+
 function syncToggle(){
   document.getElementById('btnMap').classList.toggle('active', state.mapVisible);
   document.getElementById('btnList').classList.toggle('active', !state.mapVisible);
   document.getElementById('mapwrap').style.display = state.mapVisible ? '' : 'none';
+  
+  // CRITICAL: Leaflet needs to recalculate bounds when display changes from 'none' to 'block'
+  if(state.mapVisible && leafletMap) {
+    leafletMap.invalidateSize();
+  }
 }
 
-const lonMin=-20, lonMax=52, latMin=-35, latMax=40, W=500,H=500,M=30;
-function project(lat,lon){
-  const x = M + (lon-lonMin)/(lonMax-lonMin) * (W-2*M);
-  const y = M + (latMax-lat)/(latMax-latMin) * (H-2*M);
-  return [x,y];
+function initMap() {
+  // Define the physical boundaries of the map (Southwest to Northeast corners)
+  const worldBounds = L.latLngBounds([-90, -180], [90, 180]);
+
+  leafletMap = L.map('map', {
+    center: [0, 20],
+    zoom: 3,
+    minZoom: 2, // Prevents zooming out so far that the map shrinks into the void
+    maxBounds: worldBounds, // Restricts panning to the defined worldBounds
+    maxBoundsViscosity: 1.0 // Makes the boundary a hard wall instead of an elastic rubber band
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+    noWrap: true // Disables the infinite horizontal repetition of tiles
+  }).addTo(leafletMap);
 }
 
 function renderMap(){
-  const svg = document.getElementById('africaMap');
-  svg.innerHTML='';
+  if (!geomapData || !leafletMap) return;
+  if (geoJsonLayer) leafletMap.removeLayer(geoJsonLayer);
+
   const rows = filteredRows();
-  for(const c of COUNTRIES){
-    const [x,y] = project(c.lat, c.lon);
-    const countryRows = rows.filter(r=>r.lang.country===c.name);
-    const allCountryRows = MATRIX.filter(r=>r.lang.country===c.name);
-    const covered = countryRows.filter(r=>r.status!=='untouched').length;
-    const ratio = allCountryRows.length ? covered/allCountryRows.length : 0;
-    let fill = 'var(--untouched)';
-    if(ratio>=0.6) fill='var(--covered)';
-    else if(ratio>=0.25) fill='var(--dataset)';
-    const langCount = LANGUAGES.filter(l=>l.country===c.name).length;
-    const r = 10 + langCount*2;
-    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','marker'+(state.country.has(c.name)?' selected':''));
-    g.innerHTML = `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"></circle>
-      <text x="${x}" y="${y+r+13}" text-anchor="middle">${c.name}</text>
-      <text x="${x}" y="${y+4}" text-anchor="middle" fill="#fff" font-size="10">${countryRows.length}</text>`;
-    g.onclick = ()=>{
-      if(state.country.has(c.name)) state.country.delete(c.name); else state.country.add(c.name);
-      renderAll();
-    };
-    svg.appendChild(g);
-  }
+
+  geoJsonLayer = L.geoJSON(geomapData, {
+    style: function(feature) {
+      const cName = feature.properties.name; 
+      const countryRows = rows.filter(r => r.lang.country === cName);
+      const allCountryRows = MATRIX.filter(r => r.lang.country === cName);
+      
+      const covered = countryRows.filter(r => r.status !== 'untouched').length;
+      const ratio = allCountryRows.length ? covered / allCountryRows.length : 0;
+      
+      let fill = 'var(--untouched)';
+      if(ratio >= 0.6) fill = 'var(--covered)';
+      else if(ratio >= 0.25) fill = 'var(--dataset)';
+
+      const isSelected = state.country.has(cName);
+
+      return {
+        fillColor: fill,
+        fillOpacity: 0.8,
+        color: isSelected ? 'var(--accent)' : 'var(--panel)', // Stroke color
+        weight: isSelected ? 3 : 1
+      };
+    },
+    onEachFeature: function(feature, layer) {
+      const cName = feature.properties.name;
+      
+      layer.on('click', () => {
+        if(state.country.has(cName)) state.country.delete(cName); 
+        else state.country.add(cName);
+        renderAll();
+      });
+
+      layer.bindTooltip(cName, { className: 'map-tooltip', direction: 'center' });
+    }
+  }).addTo(leafletMap);
 }
 
 function renderResults(){
@@ -202,18 +231,27 @@ function renderAll(){
 
 async function init(){
   try{
+    // Fetch original tabular database
     const res = await fetch('./data/database.json');
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
+    
+    // Fetch boundaries map
+    const geoRes = await fetch('./data/geojson/world.geo.json');
+    if(!geoRes.ok) throw new Error('HTTP '+geoRes.status+' fetching africa.geo.json');
+    geomapData = await geoRes.json();
+
     LANGUAGES = data.languages; COUNTRIES = data.countries; TASKS = data.tasks; RESOURCES = data.resources;
     MATRIX = buildMatrix();
     COMMUNITY_TAGS = [...new Set(RESOURCES.flatMap(r=>r.labels.community||[]))].sort();
+    
+    initMap();
     wireControls();
     syncToggle();
     renderAll();
   }catch(err){
     document.getElementById('resultsArea').innerHTML =
-      `<div class="empty">Couldn't load data.json (${err.message}). If you're opening this file directly (file://), browsers block local fetch() — run a local server instead, e.g. <code>python -m http.server</code>, or view it once pushed to GitHub Pages.</div>`;
+      `<div class="empty">Couldn't load data (${err.message}). Since we are using Leaflet and external tile servers, you must run this locally via a server, e.g. <code>python -m http.server</code>.</div>`;
   }
 }
 init();
