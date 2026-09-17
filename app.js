@@ -162,8 +162,19 @@ function renderMap(){
       const countryRows = rows.filter(r => r.lang.country === cName);
       const allCountryRows = MATRIX.filter(r => r.lang.country === cName);
       
+      // 1. Country has no data in database.json at all
+      if (allCountryRows.length === 0) {
+        return { fillColor: 'transparent', color: 'var(--line)', weight: 1 };
+      }
+      
+      // 2. Country is in DB, but the user's filters excluded all its data (e.g., 0 "stable" matches)
+      if (countryRows.length === 0) {
+        return { fillColor: 'var(--panel)', color: 'var(--line)', weight: 1, fillOpacity: 0.8 };
+      }
+      
+      // 3. Country has active matches. Calculate ratio against the FILTERED rows, not all rows.
       const covered = countryRows.filter(r => r.status !== 'untouched').length;
-      const ratio = allCountryRows.length ? covered / allCountryRows.length : 0;
+      const ratio = covered / countryRows.length;
       
       let fill = 'var(--untouched)';
       if(ratio >= 0.6) fill = 'var(--covered)';
@@ -174,20 +185,36 @@ function renderMap(){
       return {
         fillColor: fill,
         fillOpacity: 0.8,
-        color: isSelected ? 'var(--accent)' : 'var(--panel)', // Stroke color
+        color: isSelected ? 'var(--accent)' : 'var(--panel)', 
         weight: isSelected ? 3 : 1
       };
     },
     onEachFeature: function(feature, layer) {
       const cName = feature.properties.name;
-      
-      layer.on('click', () => {
-        if(state.country.has(cName)) state.country.delete(cName); 
-        else state.country.add(cName);
-        renderAll();
-      });
+      const countryRows = rows.filter(r => r.lang.country === cName);
+      const allCountryRows = MATRIX.filter(r => r.lang.country === cName);
 
-      layer.bindTooltip(cName, { className: 'map-tooltip', direction: 'center' });
+      // Only add labels and click events to countries that actually exist in our dataset
+      if (allCountryRows.length > 0) {
+        layer.on('click', () => {
+          if(state.country.has(cName)) state.country.delete(cName); 
+          else state.country.add(cName);
+          renderAll();
+        });
+
+        // Restore the permanent numeric label from the old SVG map
+        layer.bindTooltip(
+          `<div style="text-align:center; line-height:1.2;">
+             ${cName}<br>
+             <span style="font-size:11.5px; color:var(--ink-soft); font-weight:400;">${countryRows.length}</span>
+           </div>`, 
+          { 
+            permanent: true, 
+            direction: 'center', 
+            className: 'permanent-label' 
+          }
+        );
+      }
     }
   }).addTo(leafletMap);
 }

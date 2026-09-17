@@ -66,6 +66,17 @@ main{ padding:24px clamp(16px,3vw,32px) 60px; min-width:0; }
   padding: 4px 8px;
   font-weight: 500;
 }
+/* Removes the default Leaflet bubble styling for our permanent map labels */
+.permanent-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
+  /* Adds a subtle white glow so text is readable regardless of the map color underneath */
+  text-shadow: 0 1px 2px var(--panel), 0 -1px 2px var(--panel), 1px 0 2px var(--panel), -1px 0 2px var(--panel);
+}
 
 .results-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; gap:12px; flex-wrap:wrap;}
 .results-head h2{ font-size:17px; }
