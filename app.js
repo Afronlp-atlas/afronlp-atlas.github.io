@@ -13,7 +13,7 @@ const state = {
   search:'',
   status:new Set(), task:new Set(), country:new Set(), endangerment:new Set(),
   community:new Set(),
-  mapVisible:true,
+  viewMode: 'both', // 'both', 'map', or 'list'
 };
 
 function buildMatrix(){
@@ -116,17 +116,32 @@ function wireControls(){
     document.getElementById('search').value='';
     renderAll();
   };
-  document.getElementById('btnMap').onclick = ()=>{ state.mapVisible=true; syncToggle(); renderAll(); };
-  document.getElementById('btnList').onclick = ()=>{ state.mapVisible=false; syncToggle(); renderAll(); };
+  
+  // Wire up the three buttons
+  document.getElementById('btnBoth').onclick = ()=>{ state.viewMode='both'; syncToggle(); renderAll(); };
+  document.getElementById('btnMap').onclick = ()=>{ state.viewMode='map'; syncToggle(); renderAll(); };
+  document.getElementById('btnList').onclick = ()=>{ state.viewMode='list'; syncToggle(); renderAll(); };
 }
 
 function syncToggle(){
-  document.getElementById('btnMap').classList.toggle('active', state.mapVisible);
-  document.getElementById('btnList').classList.toggle('active', !state.mapVisible);
-  document.getElementById('mapwrap').style.display = state.mapVisible ? '' : 'none';
+  const showMap = state.viewMode === 'both' || state.viewMode === 'map';
+  const showList = state.viewMode === 'both' || state.viewMode === 'list';
+
+  // Update button active states
+  document.getElementById('btnBoth').classList.toggle('active', state.viewMode === 'both');
+  document.getElementById('btnMap').classList.toggle('active', state.viewMode === 'map');
+  document.getElementById('btnList').classList.toggle('active', state.viewMode === 'list');
+
+  // Toggle map container
+  document.getElementById('mapwrap').style.display = showMap ? '' : 'none';
   
-  // CRITICAL: Leaflet needs to recalculate bounds when display changes from 'none' to 'block'
-  if(state.mapVisible && leafletMap) {
+  // Toggle the results header and table area
+  const resultsHead = document.querySelector('.results-head');
+  if (resultsHead) resultsHead.style.display = showList ? '' : 'none';
+  document.getElementById('resultsArea').style.display = showList ? '' : 'none';
+  
+  // Prevent Leaflet from rendering a broken map when un-hidden
+  if(showMap && leafletMap) {
     leafletMap.invalidateSize();
   }
 }
@@ -252,8 +267,12 @@ function renderResults(){
 
 function renderAll(){
   renderSidebar();
-  if(state.mapVisible) renderMap();
-  renderResults();
+  
+  const showMap = state.viewMode === 'both' || state.viewMode === 'map';
+  const showList = state.viewMode === 'both' || state.viewMode === 'list';
+  
+  if (showMap) renderMap();
+  if (showList) renderResults();
 }
 
 async function init(){
